@@ -202,7 +202,7 @@ function lsGet(k)    { try { return localStorage.getItem(k); } catch(e) { return
 function lsDel(k)    { try { localStorage.removeItem(k); } catch(e) {} }
 
 /* ── Video code ── */
-const code = new URLSearchParams(location.search).get('video');
+const code = new URLSearchParams(location.search).get('p');
 if (!code) {
   document.body.innerHTML = '<p style="padding:40px;text-align:center;color:#6b7280">⚠️ No video code provided.</p>';
 }
