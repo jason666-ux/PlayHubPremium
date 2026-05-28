@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>PlayHubPremium — Video Manager</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    :root{
+      --bg:#090c16;--card:#111827;--border:rgba(255,255,255,0.08);
+      --gold:#f0c040;--orange:#ff6b35;--green:#2dce89;--red:#ef4444;
+      --blue:#60a5fa;--muted:#6b7280;--text:#f3f0eb;--r:12px;
+    }
+    body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;min-height:100vh;padding:32px 16px 60px;}
+    h1{font-size:1.4rem;font-weight:800;margin-bottom:4px;}
+    h1 span{background:linear-gradient(90deg,var(--gold),var(--orange));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+    .subtitle{font-size:.82rem;color:var(--muted);margin-bottom:28px;}
+    .wrap{max-width:640px;margin:0 auto;}
+
+    .card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:22px 20px;margin-bottom:18px;}
+    .card-title{font-size:.7rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--gold);margin-bottom:14px;display:flex;align-items:center;gap:7px;}
+
+    label{display:block;font-size:.8rem;color:var(--muted);margin-bottom:5px;margin-top:11px;}
+    label:first-of-type{margin-top:0;}
+    input{width:100%;background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:var(--r);padding:10px 13px;color:var(--text);font-size:.88rem;outline:none;transition:border-color .2s;font-family:inherit;}
+    input:focus{border-color:rgba(240,192,64,.4);}
+    input[type=password]{letter-spacing:.1em;}
+
+    .btn{padding:10px 18px;border:none;border-radius:var(--r);font-size:.85rem;font-weight:700;cursor:pointer;transition:transform .15s,opacity .2s;display:inline-flex;align-items:center;gap:7px;}
+    .btn:active{transform:scale(.97);}
+    .btn:disabled{opacity:.4;cursor:not-allowed;transform:none;}
+    .btn-gold{background:linear-gradient(135deg,var(--gold),var(--orange));color:#0a0a0a;}
+    .btn-green{background:rgba(45,206,137,.15);color:var(--green);border:1px solid rgba(45,206,137,.25);}
+    .btn-blue{background:rgba(96,165,250,.12);color:var(--blue);border:1px solid rgba(96,165,250,.25);}
+    .btn-red{background:rgba(239,68,68,.1);color:var(--red);border:1px solid rgba(239,68,68,.2);}
+    .btn-ghost{background:rgba(255,255,255,.05);color:var(--text);border:1px solid var(--border);}
+    .btn-row{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px;}
+
+    /* status badge */
+    .badge{display:inline-flex;align-items:center;gap:5px;font-size:.72rem;font-weight:700;padding:3px 10px;border-radius:100px;}
+    .badge-ok{background:rgba(45,206,137,.12);color:var(--green);border:1px solid rgba(45,206,137,.2);}
+    .badge-warn{background:rgba(240,192,64,.1);color:var(--gold);border:1px solid rgba(240,192,64,.2);}
+    .badge-err{background:rgba(239,68,68,.1);color:var(--red);border:1px solid rgba(239,68,68,.2);}
+
+    /* result */
+    .result{display:none;margin-top:16px;background:rgba(45,206,137,.05);border:1px solid rgba(45,206,137,.2);border-radius:var(--r);padding:14px 16px;}
+    .result.on{display:block;}
+    .result-label{font-size:.7rem;color:var(--green);font-weight:700;letter-spacing:.08em;text-transform:uppercase;margin-bottom:8px;}
+    .result-url{font-size:.95rem;font-weight:700;word-break:break-all;margin-bottom:6px;}
+    .result-meta{font-size:.73rem;color:var(--muted);font-family:monospace;}
+
+    /* push status */
+    .push-status{margin-top:12px;font-size:.8rem;padding:9px 12px;border-radius:var(--r);display:none;}
+    .push-status.on{display:block;}
+    .push-status.loading{background:rgba(96,165,250,.08);color:var(--blue);border:1px solid rgba(96,165,250,.2);}
+    .push-status.success{background:rgba(45,206,137,.08);color:var(--green);border:1px solid rgba(45,206,137,.2);}
+    .push-status.error{background:rgba(239,68,68,.08);color:var(--red);border:1px solid rgba(239,68,68,.2);}
+
+    /* table */
+    .map-count{font-size:.78rem;color:var(--muted);margin-bottom:10px;}
+    .map-count b{color:var(--gold);}
+    .table-wrap{max-height:280px;overflow-y:auto;}
+    table{width:100%;border-collapse:collapse;font-size:.77rem;}
+    th{text-align:left;padding:6px 8px;color:var(--muted);font-weight:600;border-bottom:1px solid var(--border);font-size:.68rem;letter-spacing:.06em;text-transform:uppercase;position:sticky;top:0;background:var(--card);}
+    td{padding:7px 8px;border-bottom:1px solid rgba(255,255,255,.04);vertical-align:middle;}
+    tr:last-child td{border-bottom:none;}
+    .code-pill{background:rgba(240,192,64,.1);color:var(--gold);border-radius:6px;padding:2px 8px;font-family:monospace;font-size:.74rem;}
+    .fid{color:var(--muted);font-family:monospace;font-size:.7rem;word-break:break-all;}
+    .del{background:none;border:none;color:var(--red);cursor:pointer;font-size:.72rem;opacity:.5;padding:2px 6px;border-radius:4px;}
+    .del:hover{opacity:1;background:rgba(239,68,68,.1);}
+    .empty-msg{text-align:center;padding:22px;color:var(--muted);font-size:.82rem;}
+
+    .warn-box{background:rgba(239,68,68,.07);border:1px solid rgba(239,68,68,.18);border-radius:var(--r);padding:10px 14px;font-size:.78rem;color:#fca5a5;margin-bottom:14px;line-height:1.6;}
+    .info-box{background:rgba(96,165,250,.06);border:1px solid rgba(96,165,250,.15);border-radius:var(--r);padding:10px 14px;font-size:.78rem;color:#93c5fd;margin-bottom:14px;line-height:1.7;}
+
+    .copy-toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--green);color:#000;font-weight:700;font-size:.82rem;padding:9px 22px;border-radius:100px;opacity:0;transition:opacity .3s;pointer-events:none;z-index:999;}
+    .copy-toast.show{opacity:1;}
+
+    .gh-status-row{display:flex;align-items:center;gap:8px;margin-top:10px;}
+    .spinner{width:14px;height:14px;border:2px solid rgba(96,165,250,.3);border-top-color:var(--blue);border-radius:50%;animation:spin .7s linear infinite;flex-shrink:0;}
+    @keyframes spin{to{transform:rotate(360deg)}}
+  </style>
+</head>
+<body>
+<div class="wrap">
+  <h1>PlayHub<span>Premium</span> Manager</h1>
+  <p class="subtitle">🔒 Private tool — never share this page URL with anyone.</p>
+
+  <!-- GitHub Settings -->
+  <div class="card">
+    <div class="card-title">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.58 2 12.26c0 4.54 2.87 8.39 6.84 9.75.5.09.68-.22.68-.49v-1.7c-2.78.62-3.37-1.37-3.37-1.37-.45-1.18-1.11-1.5-1.11-1.5-.91-.64.07-.63.07-.63 1 .07 1.53 1.06 1.53 1.06.89 1.57 2.34 1.12 2.91.85.09-.66.35-1.12.63-1.38-2.22-.26-4.56-1.14-4.56-5.07 0-1.12.39-2.03 1.03-2.75-.1-.26-.45-1.3.1-2.71 0 0 .84-.28 2.75 1.05A9.38 9.38 0 0112 7.4c.85 0 1.71.12 2.51.34 1.91-1.33 2.75-1.05 2.75-1.05.55 1.41.2 2.45.1 2.71.64.72 1.03 1.63 1.03 2.75 0 3.94-2.34 4.81-4.57 5.06.36.32.68.94.68 1.9v2.82c0 .27.18.59.69.49A10.27 10.27 0 0022 12.26C22 6.58 17.52 2 12 2z"/></svg>
+      GitHub Settings
+    </div>
+    <div class="info-box">
+      Your token is stored <strong>only in this browser</strong> — never sent anywhere except directly to GitHub API.
+    </div>
+    <label>GitHub Username</label>
+    <input type="text" id="ghUser" placeholder="e.g. yourname">
+    <label>Repository Name</label>
+    <input type="text" id="ghRepo" placeholder="e.g. playhubpremium">
+    <label>Branch (usually main or master)</label>
+    <input type="text" id="ghBranch" placeholder="main" value="main">
+    <label>Personal Access Token</label>
+    <input type="password" id="ghToken" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx">
+    <div class="btn-row">
+      <button class="btn btn-blue" onclick="saveGHSettings()">💾 Save Settings</button>
+      <button class="btn btn-ghost" onclick="testConnection()" id="testBtn">🔗 Test Connection</button>
+    </div>
+    <div class="gh-status-row" id="ghStatusRow" style="display:none">
+      <div class="spinner" id="ghSpinner" style="display:none"></div>
+      <span id="ghStatusBadge"></span>
+    </div>
+  </div>
+
+  <!-- Add Video -->
+  <div class="card">
+    <div class="card-title">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M12 5v14M5 12h14"/></svg>
+      Add New Video
+    </div>
+    <label>Your Landing Page Domain</label>
+    <input type="text" id="domain" placeholder="https://playhubpremium.gleeze.com">
+    <label>Telegram File ID <small style="color:var(--muted)">(part after ?start= in bot link)</small></label>
+    <input type="text" id="fileId" placeholder="BQADAQADJhgAAtnIuEQ6ytD-iaq5vRYE">
+    <div class="btn-row">
+      <button class="btn btn-gold" onclick="addVideo()">⚡ Generate &amp; Push to GitHub</button>
+    </div>
+
+    <div class="result" id="result">
+      <div class="result-label">✅ Short URL — post this in your channel</div>
+      <div class="result-url" id="resultUrl"></div>
+      <div class="result-meta" id="resultMeta"></div>
+      <div class="btn-row">
+        <button class="btn btn-green" onclick="copyUrl()">📋 Copy URL</button>
+      </div>
+    </div>
+
+    <div class="push-status" id="pushStatus"></div>
+  </div>
+
+  <!-- Video Map Table -->
+  <div class="card">
+    <div class="card-title">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+      Your Video Map
+    </div>
+    <div class="map-count">Total: <b id="mapCount">0</b> videos</div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Short Code</th><th>File ID</th><th>Short URL</th><th></th></tr></thead>
+        <tbody id="mapBody"></tbody>
+      </table>
+      <div class="empty-msg" id="emptyMsg">No videos yet. Add your first video above.</div>
+    </div>
+    <div class="btn-row" style="margin-top:14px;">
+      <button class="btn btn-ghost" onclick="pushToGitHub(true)">🚀 Push Current Map to GitHub</button>
+    </div>
+  </div>
+
+</div>
+
+<div class="copy-toast" id="toast"></div>
+
+<script>
+const STORE   = 'php_map_v2';
+const GH_CONF = 'php_gh_conf';
+
+/* ── Persistence ── */
+function loadMap()       { try { return JSON.parse(localStorage.getItem(STORE)) || {}; } catch(e) { return {}; } }
+function saveMap(m)      { try { localStorage.setItem(STORE, JSON.stringify(m)); } catch(e) {} }
+function loadConf()      { try { return JSON.parse(localStorage.getItem(GH_CONF)) || {}; } catch(e) { return {}; } }
+function saveConf(c)     { try { localStorage.setItem(GH_CONF, JSON.stringify(c)); } catch(e) {} }
+
+/* ── Populate saved settings on load ── */
+window.addEventListener('DOMContentLoaded', () => {
+  const c = loadConf();
+  if (c.user)   document.getElementById('ghUser').value   = c.user;
+  if (c.repo)   document.getElementById('ghRepo').value   = c.repo;
+  if (c.branch) document.getElementById('ghBranch').value = c.branch;
+  if (c.token)  document.getElementById('ghToken').value  = c.token;
+  if (c.domain) document.getElementById('domain').value   = c.domain;
+  renderTable();
+});
+
+/* ── Save GitHub settings ── */
+function saveGHSettings() {
+  const c = {
+    user:   document.getElementById('ghUser').value.trim(),
+    repo:   document.getElementById('ghRepo').value.trim(),
+    branch: document.getElementById('ghBranch').value.trim() || 'main',
+    token:  document.getElementById('ghToken').value.trim(),
+    domain: document.getElementById('domain').value.trim().replace(/\/$/, '')
+  };
+  if (!c.user || !c.repo || !c.token) { toast('Fill in username, repo and token first.'); return; }
+  saveConf(c);
+  toast('Settings saved!');
+}
+
+/* ── Test GitHub connection ── */
+async function testConnection() {
+  const c = loadConf();
+  if (!c.token || !c.user || !c.repo) { showGHStatus('warn', '⚠️ Save your settings first.'); return; }
+  showGHStatus('loading', 'Testing connection…');
+  try {
+    const res = await fetch(`https://api.github.com/repos/${c.user}/${c.repo}`, {
+      headers: { Authorization: `token ${c.token}`, Accept: 'application/vnd.github.v3+json' }
+    });
+    if (res.ok) {
+      const d = await res.json();
+      showGHStatus('ok', `✅ Connected — ${d.full_name}`);
+    } else {
+      const d = await res.json();
+      showGHStatus('err', `❌ Error ${res.status}: ${d.message}`);
+    }
+  } catch(e) {
+    showGHStatus('err', '❌ Network error: ' + e.message);
+  }
+}
+
+function showGHStatus(type, msg) {
+  const row     = document.getElementById('ghStatusRow');
+  const spinner = document.getElementById('ghSpinner');
+  const badge   = document.getElementById('ghStatusBadge');
+  row.style.display = 'flex';
+  spinner.style.display = type === 'loading' ? 'block' : 'none';
+  badge.className = type === 'ok' ? 'badge badge-ok' : type === 'err' ? 'badge badge-err' : 'badge badge-warn';
+  badge.textContent = msg;
+}
+
+/* ── Generate random 6-char code ── */
+function genCode(map) {
+  const chars = 'abcdefghijklmnopqrstuvwxyz0123456789';
+  let code;
+  do { code = Array.from({length:6}, () => chars[Math.floor(Math.random()*chars.length)]).join(''); }
+  while (map[code]);
+  return code;
+}
+
+/* ── Build obfuscatedMap.js content ── */
+function buildMapContent(map) {
+  const entries = Object.entries(map);
+  if (!entries.length) return 'const obfuscatedMap = {};';
+  const lines = entries.map(([k,v]) => `  "${k}": "${v}"`).join(',
+');
+  return `const obfuscatedMap = {
+${lines}
+};`;
+}
+
+/* ── Push map to GitHub ── */
+async function pushToGitHub(silent = false) {
+  const c = loadConf();
+  if (!c.token || !c.user || !c.repo) {
+    setPushStatus('error', '❌ GitHub settings not saved. Fill in the GitHub Settings section first.');
+    return false;
+  }
+
+  const content  = buildMapContent(loadMap());
+  const encoded  = btoa(unescape(encodeURIComponent(content)));
+  const filePath = 'obfuscatedMap.js';
+  const apiUrl   = `https://api.github.com/repos/${c.user}/${c.repo}/contents/${filePath}`;
+  const headers  = { Authorization: `token ${c.token}`, Accept: 'application/vnd.github.v3+json', 'Content-Type': 'application/json' };
+
+  if (!silent) setPushStatus('loading', '⏳ Pushing to GitHub…');
+
+  try {
+    /* Get current file SHA (needed for update) */
+    let sha = null;
+    const getRes = await fetch(`${apiUrl}?ref=${c.branch}`, { headers });
+    if (getRes.ok) { const d = await getRes.json(); sha = d.sha; }
+
+    /* Commit the file */
+    const body = { message: 'Update obfuscatedMap.js via Video Manager', content: encoded, branch: c.branch };
+    if (sha) body.sha = sha;
+
+    const putRes = await fetch(apiUrl, { method: 'PUT', headers, body: JSON.stringify(body) });
+
+    if (putRes.ok) {
+      setPushStatus('success', '✅ Pushed to GitHub! GitHub Pages will update in ~30 seconds.');
+      return true;
+    } else {
+      const d = await putRes.json();
+      setPushStatus('error', `❌ GitHub error: ${d.message}`);
+      return false;
+    }
+  } catch(e) {
+    setPushStatus('error', '❌ Network error: ' + e.message);
+    return false;
+  }
+}
+
+function setPushStatus(type, msg) {
+  const el = document.getElementById('pushStatus');
+  el.className = 'push-status on ' + (type === 'loading' ? 'loading' : type === 'success' ? 'success' : 'error');
+  el.innerHTML = msg;
+}
+
+/* ── Add video ── */
+async function addVideo() {
+  // Auto-save settings from fields
+  const c = {
+    user:   document.getElementById('ghUser').value.trim(),
+    repo:   document.getElementById('ghRepo').value.trim(),
+    branch: document.getElementById('ghBranch').value.trim() || 'main',
+    token:  document.getElementById('ghToken').value.trim(),
+    domain: document.getElementById('domain').value.trim().replace(/\/$/, '')
+  };
+  if (!c.domain) { toast('Enter your landing page domain first.'); return; }
+  saveConf(c);
+
+  const fileId = document.getElementById('fileId').value.trim();
+  if (!fileId) { toast('Paste the Telegram File ID first.'); return; }
+
+  const map      = loadMap();
+  const existing = Object.entries(map).find(([k,v]) => v === fileId);
+
+  let code;
+  if (existing) {
+    code = existing[0];
+    showResult(c.domain + '/?p=' + code, code, fileId, true);
+  } else {
+    code = genCode(map);
+    map[code] = fileId;
+    saveMap(map);
+    showResult(c.domain + '/?p=' + code, code, fileId, false);
+    renderTable();
+    /* Auto push */
+    await pushToGitHub(false);
+  }
+}
+
+function showResult(url, code, fileId, existing) {
+  document.getElementById('resultUrl').textContent  = url;
+  document.getElementById('resultMeta').textContent =
+    (existing ? '⚠️ Already exists — ' : '🆕 New — ') + 'code: ' + code;
+  document.getElementById('result').classList.add('on');
+  window._lastUrl = url;
+}
+
+/* ── Table ── */
+function renderTable() {
+  const map    = loadMap();
+  const c      = loadConf();
+  const domain = c.domain || 'https://your-domain.com';
+  const keys   = Object.keys(map).reverse();
+  const tbody  = document.getElementById('mapBody');
+  const empty  = document.getElementById('emptyMsg');
+  document.getElementById('mapCount').textContent = keys.length;
+  if (!keys.length) { tbody.innerHTML = ''; empty.style.display = 'block'; return; }
+  empty.style.display = 'none';
+  tbody.innerHTML = keys.map(code => `
+    <tr>
+      <td><span class="code-pill">${code}</span></td>
+      <td><span class="fid">${map[code]}</span></td>
+      <td><span style="font-size:.7rem;color:#94a3b8;">${domain}/?p=${code}</span></td>
+      <td><button class="del" onclick="deleteCode('${code}')">✕</button></td>
+    </tr>`).join('');
+}
+
+async function deleteCode(code) {
+  if (!confirm(`Delete code "${code}"? Its short URL will stop working.`)) return;
+  const map = loadMap();
+  delete map[code];
+  saveMap(map);
+  renderTable();
+  await pushToGitHub(false);
+}
+
+/* ── Helpers ── */
+function copyUrl() {
+  if (!window._lastUrl) return;
+  navigator.clipboard.writeText(window._lastUrl).then(() => toast('URL copied!'));
+}
+
+function toast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2200);
+}
+</script>
+</body>
+</html>
