@@ -3,250 +3,207 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Video Manager</title>
+<title>Video Manager (Fresh Build)</title>
 <style>
-*{box-sizing:border-box;margin:0;padding:0}
-body{background:#0a0f1e;color:#f3f0eb;font-family:sans-serif;padding:24px 16px;}
-h2{color:#f0c040;margin-bottom:20px;}
-.box{background:#111827;border:1px solid rgba(255,255,255,.1);border-radius:12px;padding:20px;margin-bottom:16px;}
-label{display:block;font-size:.8rem;color:#9ca3af;margin-bottom:4px;margin-top:12px;}
-label:first-child{margin-top:0;}
-input{width:100%;padding:10px 12px;background:#1f2937;border:1px solid rgba(255,255,255,.1);border-radius:8px;color:#fff;font-size:.9rem;outline:none;}
-input:focus{border-color:#f0c040;}
-button{padding:11px 20px;border:none;border-radius:8px;font-size:.88rem;font-weight:700;cursor:pointer;margin-top:10px;margin-right:8px;}
-.btn-y{background:linear-gradient(135deg,#f0c040,#ff6b35);color:#000;}
-.btn-b{background:#1e3a5f;color:#60a5fa;border:1px solid #2563eb;}
-.btn-g{background:#14532d;color:#4ade80;border:1px solid #16a34a;}
-.btn-r{background:#450a0a;color:#f87171;border:1px solid #dc2626;}
-#msg{padding:12px;border-radius:8px;margin-top:12px;font-size:.85rem;display:none;}
-.ok{background:#052e16;color:#4ade80;border:1px solid #16a34a;}
-.err{background:#450a0a;color:#f87171;border:1px solid #dc2626;}
-.info{background:#0c1a2e;color:#60a5fa;border:1px solid #2563eb;}
-#shortUrl{font-size:1.1rem;font-weight:700;word-break:break-all;margin:10px 0;display:none;}
-table{width:100%;border-collapse:collapse;font-size:.8rem;margin-top:10px;}
-th{text-align:left;padding:8px;color:#6b7280;border-bottom:1px solid rgba(255,255,255,.08);}
-td{padding:8px;border-bottom:1px solid rgba(255,255,255,.05);word-break:break-all;}
-.pill{background:rgba(240,192,64,.15);color:#f0c040;padding:2px 8px;border-radius:6px;font-family:monospace;}
-.warn{background:#422006;color:#fdba74;border:1px solid #ea580c;padding:10px 14px;border-radius:8px;font-size:.82rem;margin-bottom:12px;}
+  body { background: #1a1a2e; color: #cbd5e1; font-family: system-ui, sans-serif; padding: 20px; max-width: 600px; margin: 0 auto; }
+  h2 { color: #38bdf8; margin-top: 0; }
+  .card { background: #0f172a; padding: 20px; border-radius: 8px; margin-bottom: 20px; border: 1px solid #334155; }
+  input { width: 100%; box-sizing: border-box; padding: 10px; margin: 8px 0 16px; background: #1e293b; border: 1px solid #475569; color: white; border-radius: 4px; font-family: monospace; }
+  button { background: #3b82f6; color: white; border: none; padding: 12px 20px; cursor: pointer; border-radius: 4px; font-weight: bold; width: 100%; margin-bottom: 10px; }
+  button:hover { background: #2563eb; }
+  .btn-green { background: #10b981; }
+  .btn-green:hover { background: #059669; }
+  #console { background: #000; color: #10b981; padding: 15px; font-family: monospace; height: 180px; overflow-y: auto; font-size: 13px; border-radius: 4px; margin-bottom: 20px; border: 1px solid #334155; }
+  .err { color: #ef4444; }
+  .warn { color: #f59e0b; }
 </style>
 </head>
 <body>
 
-<h2>&#127916; PlayHubPremium Video Manager</h2>
+<h2>Video Manager</h2>
 
-<!-- GitHub Config -->
-<div class="box">
-  <b style="color:#f0c040">Step 1 — GitHub Settings</b>
+<!-- THE MOST IMPORTANT PART: The live log console -->
+<div id="console">System Ready...<br></div>
+
+<div class="card">
+  <h3 style="margin-top:0;">Step 1: Setup GitHub</h3>
   <label>GitHub Username</label>
-  <input id="u" placeholder="yourname">
+  <input id="u" placeholder="e.g. john">
   <label>Repository Name</label>
-  <input id="r" placeholder="playhubpremium">
-  <label>Branch</label>
-  <input id="b" value="main">
-  <label>Personal Access Token</label>
-  <input id="t" type="password" placeholder="ghp_xxxxxxxxxxxxx">
-  <label>Your Site URL (no trailing slash)</label>
-  <input id="d" placeholder="https://yourusername.github.io/playhubpremium">
-  <br>
-  <button class="btn-b" onclick="saveSettings()">&#128190; Save Settings</button>
-  <button class="btn-b" onclick="testConn()">&#128279; Test Connection</button>
-  <div id="connMsg" style="margin-top:10px;font-size:.85rem;"></div>
+  <input id="r" placeholder="e.g. playhub">
+  <label>GitHub Personal Access Token</label>
+  <input id="t" type="password" placeholder="ghp_...">
+  <label>Landing Page URL</label>
+  <input id="d" placeholder="https://my.github.io/playhub">
+
+  <button onclick="saveAndTest()">Save & Test Connection</button>
 </div>
 
-<!-- Add Video -->
-<div class="box">
-  <b style="color:#f0c040">Step 2 — Add New Video</b>
-  <label>Telegram File ID (paste code after ?start= from bot link)</label>
-  <input id="fid" placeholder="BQADAQADJhgAAtnIuEQ6ytD-iaq5vRYE">
-  <br>
-  <button class="btn-y" onclick="addVideo()">&#9889; Generate Short URL + Push to GitHub</button>
-  <div id="shortUrl"></div>
-  <div id="msg"></div>
+<div class="card">
+  <h3 style="margin-top:0;">Step 2: Add New Video</h3>
+  <label>Telegram File ID (paste the code after ?start=)</label>
+  <input id="fid" placeholder="BQADAQAD...">
+  <button class="btn-green" onclick="generate()">Generate URL & Push to GitHub</button>
 </div>
 
-<!-- Map Table -->
-<div class="box">
-  <b style="color:#f0c040">Step 3 — Video Map (<span id="cnt">0</span> videos)</b>
-  <div id="tbl"></div>
-  <br>
-  <button class="btn-g" onclick="pushNow()">&#128640; Push Map to GitHub Now</button>
+<div class="card" id="resCard" style="display:none; border-color: #10b981; background: #064e3b;">
+  <h3 style="color: #34d399; margin-top:0;">✅ Short URL Ready:</h3>
+  <input id="resUrl" readonly style="font-size: 16px; font-weight: bold; color: white; background: #022c22; border: 1px solid #10b981; cursor: pointer;" onclick="this.select(); document.execCommand('copy'); log('URL copied to clipboard!');">
+  <p style="font-size: 12px; color: #6ee7b7; margin: 0;">Click the URL above to copy it.</p>
 </div>
 
 <script>
-function g(id){ return document.getElementById(id); }
+  // 1. Logging System (Catches everything)
+  function log(msg, type='info') {
+    const c = document.getElementById('console');
+    const time = new Date().toLocaleTimeString().split(' ')[0];
+    let cls = '';
+    if(type === 'err') cls = 'err';
+    if(type === 'warn') cls = 'warn';
+    c.innerHTML += `<div class="${cls}">[${time}] > ${msg}</div>`;
+    c.scrollTop = c.scrollHeight;
+  }
 
-function loadMap(){ try{ return JSON.parse(localStorage.getItem('vmap'))||{}; }catch(e){ return {}; } }
-function saveMap(m){ try{ localStorage.setItem('vmap', JSON.stringify(m)); }catch(e){} }
-function loadCfg(){ try{ return JSON.parse(localStorage.getItem('vcfg'))||{}; }catch(e){ return {}; } }
-function saveCfg(c){ try{ localStorage.setItem('vcfg', JSON.stringify(c)); }catch(e){} }
-
-function cfg(){
-  return {
-    u: g('u').value.trim(),
-    r: g('r').value.trim(),
-    b: g('b').value.trim()||'main',
-    t: g('t').value.trim(),
-    d: g('d').value.trim().replace(/\/+$/,'')
+  // Catch global errors so the screen never stays blank
+  window.onerror = function(msg, url, line) { 
+    log("SYS ERROR: " + msg + " (line " + line + ")", 'err'); 
+    return false;
   };
-}
 
-function saveSettings(){
-  var c = cfg();
-  if(!c.u||!c.r||!c.t||!c.d){ alert('Please fill in all fields.'); return; }
-  saveCfg(c);
-  g('connMsg').innerHTML = '<span style="color:#4ade80">&#10003; Settings saved.</span>';
-}
+  // 2. Storage
+  function loadCfg() { try { return JSON.parse(localStorage.getItem('vm_cfg_new')) || {}; } catch(e) { return {}; } }
+  function saveCfg(c) { localStorage.setItem('vm_cfg_new', JSON.stringify(c)); }
+  function loadMap() { try { return JSON.parse(localStorage.getItem('vm_map_new')) || {}; } catch(e) { return {}; } }
+  function saveMap(m) { localStorage.setItem('vm_map_new', JSON.stringify(m)); }
 
-async function testConn(){
-  var c = cfg();
-  if(!c.u||!c.r||!c.t){ alert('Fill in username, repo and token first.'); return; }
-  g('connMsg').innerHTML = '<span style="color:#60a5fa">Testing...</span>';
-  try{
-    var res = await fetch('https://api.github.com/repos/'+c.u+'/'+c.r, {
-      headers:{ Authorization:'token '+c.t, Accept:'application/vnd.github.v3+json' }
-    });
-    var d = await res.json();
-    if(res.ok){
-      g('connMsg').innerHTML = '<span style="color:#4ade80">&#10003; Connected: '+d.full_name+'</span>';
-      saveSettings();
-    } else {
-      g('connMsg').innerHTML = '<span style="color:#f87171">&#10007; Error '+res.status+': '+d.message+'</span>';
+  // 3. Init Page
+  window.onload = function() {
+    log("Page loaded successfully.");
+    const cfg = loadCfg();
+    if(cfg.u) document.getElementById('u').value = cfg.u;
+    if(cfg.r) document.getElementById('r').value = cfg.r;
+    if(cfg.t) document.getElementById('t').value = cfg.t;
+    if(cfg.d) document.getElementById('d').value = cfg.d;
+    if(cfg.u) log("Restored saved settings.");
+  };
+
+  // 4. Test Connection
+  async function saveAndTest() {
+    const c = {
+      u: document.getElementById('u').value.trim(),
+      r: document.getElementById('r').value.trim(),
+      t: document.getElementById('t').value.trim(),
+      d: document.getElementById('d').value.trim().replace(/\/$/, '')
+    };
+
+    if(!c.u || !c.r || !c.t || !c.d) { 
+      log("Missing fields! Please fill all 4 boxes.", 'err'); 
+      return; 
     }
-  }catch(e){
-    g('connMsg').innerHTML = '<span style="color:#f87171">&#10007; Network error: '+e.message+'</span>';
-  }
-}
 
-function randCode(map){
-  var ch='abcdefghijklmnopqrstuvwxyz0123456789', code;
-  do{ code=''; for(var i=0;i<6;i++) code+=ch[Math.floor(Math.random()*ch.length)]; }
-  while(map[code]);
-  return code;
-}
+    saveCfg(c);
+    log("Settings saved.");
+    log("Testing API connection to GitHub...");
 
-function showMsg(type, text){
-  var el = g('msg');
-  el.className = type;
-  el.innerHTML = text;
-  el.style.display = 'block';
-}
+    try {
+      const res = await fetch(`https://api.github.com/repos/${c.u}/${c.r}`, {
+        headers: { Authorization: `token ${c.t}` }
+      });
+      const data = await res.json();
 
-async function addVideo(){
-  var c = loadCfg();
-  var fid = g('fid').value.trim();
-  if(!c.u||!c.r||!c.t){ alert('Save your GitHub settings in Step 1 first.'); return; }
-  if(!fid){ alert('Paste the Telegram File ID first.'); return; }
-  if(!c.d){ alert('Enter your site URL in Step 1 first.'); return; }
-
-  var map = loadMap();
-
-  // Check if already exists
-  var found = null;
-  Object.keys(map).forEach(function(k){ if(map[k]===fid) found=k; });
-  if(found){
-    var url = c.d+'/?p='+found;
-    g('shortUrl').textContent = url;
-    g('shortUrl').style.display = 'block';
-    showMsg('info','Already exists. Short code: '+found);
-    return;
+      if(res.ok) {
+        log(`✅ Success! Connected to repo: ${data.full_name}`);
+      } else {
+        log(`❌ GitHub Auth Error: ${data.message}`, 'err');
+        if(data.message.includes('Bad credentials')) log("Hint: Your token is invalid or expired.", 'warn');
+        if(data.message.includes('Not Found')) log("Hint: Repo not found. Check username and repo name.", 'warn');
+      }
+    } catch(e) {
+      log(`❌ Network Error: ${e.message}`, 'err');
+    }
   }
 
-  var code = randCode(map);
-  map[code] = fid;
-  saveMap(map);
-  renderTable();
-
-  var url = c.d+'/?p='+code;
-  g('shortUrl').textContent = url;
-  g('shortUrl').style.display = 'block';
-
-  showMsg('info','Pushing to GitHub...');
-  var ok = await doPush(c, map);
-  if(ok){
-    showMsg('ok','&#10003; Done! Short URL ready. Copy it above and post in your channel.<br><small>GitHub Pages updates in ~30 seconds.</small>');
+  function rand() {
+    const chars = 'abcdefghijklmnopqrstuvwxyz0123456789';
+    let res = '';
+    for(let i=0; i<6; i++) res += chars[Math.floor(Math.random() * chars.length)];
+    return res;
   }
-  g('fid').value = '';
-}
 
-async function doPush(c, map){
-  var content = buildMap(map);
-  var encoded = btoa(unescape(encodeURIComponent(content)));
-  var url = 'https://api.github.com/repos/'+c.u+'/'+c.r+'/contents/obfuscatedMap.js';
-  var headers = {
-    Authorization:'token '+c.t,
-    Accept:'application/vnd.github.v3+json',
-    'Content-Type':'application/json'
-  };
-  try{
-    var sha = null;
-    var gr = await fetch(url+'?ref='+c.b, {headers:headers});
-    if(gr.ok){ var gd=await gr.json(); sha=gd.sha; }
-    var body = { message:'update obfuscatedMap.js', content:encoded, branch:c.b };
-    if(sha) body.sha = sha;
-    var pr = await fetch(url,{method:'PUT',headers:headers,body:JSON.stringify(body)});
-    if(pr.ok) return true;
-    var pd = await pr.json();
-    showMsg('err','GitHub error: '+pd.message);
-    return false;
-  }catch(e){
-    showMsg('err','Network error: '+e.message);
-    return false;
+  // 5. Generate and Push
+  async function generate() {
+    const c = loadCfg();
+    const fid = document.getElementById('fid').value.trim();
+
+    if(!c.u || !c.t) { log("Please Test Connection first.", 'err'); return; }
+    if(!fid) { log("Please paste a File ID.", 'err'); return; }
+
+    log("Generating short code...");
+    const map = loadMap();
+
+    // Check if ID already exists
+    let code = Object.keys(map).find(k => map[k] === fid);
+    if(code) {
+      log(`Found existing code for this file: ${code}`, 'warn');
+    } else {
+      do { code = rand(); } while (map[code]);
+      map[code] = fid;
+      saveMap(map);
+      log(`Generated new short code: ${code}`);
+    }
+
+    // Show result instantly
+    const url = c.d + '/?p=' + code;
+    document.getElementById('resUrl').value = url;
+    document.getElementById('resCard').style.display = 'block';
+
+    // Push
+    await pushToGitHub(c, map);
   }
-}
 
-async function pushNow(){
-  var c = loadCfg();
-  if(!c.u||!c.r||!c.t){ alert('Save GitHub settings first.'); return; }
-  showMsg('info','Pushing...');
-  var ok = await doPush(c, loadMap());
-  if(ok) showMsg('ok','&#10003; Map pushed to GitHub successfully!');
-}
+  // 6. Push Logic
+  async function pushToGitHub(c, map) {
+    log("Preparing GitHub push...");
 
-function buildMap(map){
-  var keys = Object.keys(map);
-  if(!keys.length) return 'const obfuscatedMap = {};';
-  var lines = keys.map(function(k){ return '  "'+k+'": "'+map[k]+'"'; }).join(',
-');
-  return 'const obfuscatedMap = {
-'+lines+'
-};';
-}
+    const entries = Object.keys(map).map(k => `  "${k}": "${map[k]}"`).join(',\n');
+    const content = `const obfuscatedMap = {\n${entries}\n};`;
+    const encoded = btoa(unescape(encodeURIComponent(content)));
+    const url = `https://api.github.com/repos/${c.u}/${c.r}/contents/obfuscatedMap.js`;
 
-function renderTable(){
-  var map = loadMap();
-  var c   = loadCfg();
-  var d   = c.d||'https://your-site.com';
-  var keys = Object.keys(map).reverse();
-  g('cnt').textContent = keys.length;
-  if(!keys.length){ g('tbl').innerHTML='<p style="color:#6b7280;margin-top:8px;font-size:.82rem;">No videos yet.</p>'; return; }
-  var rows = keys.map(function(k){
-    return '<tr>'
-      +'<td><span class="pill">'+k+'</span></td>'
-      +'<td style="color:#6b7280;font-family:monospace;font-size:.72rem;">'+map[k]+'</td>'
-      +'<td style="color:#94a3b8;font-size:.72rem;">'+d+'/?p='+k+'</td>'
-      +'<td><button class="btn-r" style="padding:3px 9px;margin:0;font-size:.72rem;" onclick="delCode(''+k+'')">&#10005;</button></td>'
-    +'</tr>';
-  }).join('');
-  g('tbl').innerHTML = '<table><tr><th>Code</th><th>File ID</th><th>Short URL</th><th></th></tr>'+rows+'</table>';
-}
+    try {
+      log("Checking if obfuscatedMap.js exists...");
+      let sha = null;
+      const getRes = await fetch(url, { headers: { Authorization: `token ${c.t}` } });
 
-async function delCode(code){
-  if(!confirm('Delete "'+code+'"? Its short URL will break.')) return;
-  var map = loadMap(); delete map[code]; saveMap(map); renderTable();
-  var c = loadCfg();
-  if(c.u&&c.r&&c.t){ showMsg('info','Pushing updated map...'); var ok=await doPush(c,map); if(ok) showMsg('ok','&#10003; Deleted and pushed.'); }
-}
+      if(getRes.ok) {
+        const getData = await getRes.json();
+        sha = getData.sha;
+        log("File exists. Updating...");
+      } else {
+        log("File not found. Creating...");
+      }
 
-// Init
-(function(){
-  var c = loadCfg();
-  if(c.u) g('u').value=c.u;
-  if(c.r) g('r').value=c.r;
-  if(c.b) g('b').value=c.b;
-  if(c.t) g('t').value=c.t;
-  if(c.d) g('d').value=c.d;
-  renderTable();
-})();
+      const body = { message: "Update video map (Video Manager)", content: encoded };
+      if(sha) body.sha = sha;
+
+      log("Sending data to GitHub API...");
+      const putRes = await fetch(url, {
+        method: 'PUT',
+        headers: { Authorization: `token ${c.t}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify(body)
+      });
+
+      if(putRes.ok) {
+        log("✅ PUSH SUCCESS! Map updated.", 'info');
+        log("Wait ~30 seconds for GitHub Pages to deploy.", 'warn');
+      } else {
+        const putData = await putRes.json();
+        log("❌ PUSH FAILED: " + putData.message, 'err');
+      }
+    } catch(e) {
+      log("❌ PUSH ERROR: " + e.message, 'err');
+    }
+  }
 </script>
 </body>
 </html>
