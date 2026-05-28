@@ -1,3 +1,3 @@
 const obfuscatedMap = {
-  "fc77vu": "BQADAQADJhgAAtnIuEQ6ytD-iaq5vRYE"
+  "zfw95t": "BQADAQAD6QsAAkc8wETPBbq7aUPIcRYE"
 };
