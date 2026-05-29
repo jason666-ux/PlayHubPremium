@@ -14,5 +14,6 @@ const obfuscatedMap = {
   "hfwfpp": "BQADAQADHAsAAkc8yETMQVX_i47PzhYE",
   "5j6clz": "BQADAQADJwsAAkc8yER9HjUd9K_WvBYE",
   "4e41hz": "BQADAQADYgsAAkc8yESVL76G9-RBvRYE",
-  "xot2ve": "BQADAQADDA4AAovs0EQ6ebVwOr3CRBYE"
+  "xot2ve": "BQADAQADDA4AAovs0EQ6ebVwOr3CRBYE",
+  "ptvx8u": "BQADAQADHg4AAovs0ESM2yhEAAFKxikWBA"
 };
