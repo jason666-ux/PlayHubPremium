@@ -21,5 +21,6 @@ const obfuscatedMap = {
   "frxtmh": "BQADAQADGgoAAovs2ESYgGtfBcJbPxYE",
   "atajbv": "BQADAQADmxcAAovs2ERRdzRvPxbTZxYE",
   "xfxs4r": "BQADAQADoBcAAovs2ERbIIFF9I_JOxYE",
-  "o68mm0": "BQADAQADpxcAAovs2ESTVKxtgpBwxhYE"
+  "o68mm0": "BQADAQADpxcAAovs2ESTVKxtgpBwxhYE",
+  "xz02yp": "BQADAQADqxcAAovs2ESoNxsfwK0x1xYE"
 };
